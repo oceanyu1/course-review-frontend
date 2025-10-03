@@ -2,6 +2,7 @@ import { formatDate, wasEdited } from "../utils/dateUtils";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Trash2, Pencil } from 'lucide-react';
+import type { Course } from '../services/courseService';
 import { courseService } from "../services/courseService";
 import type { Review } from "../types/review";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,15 +17,16 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { reviewService } from "@/services/reviewService";
+import EditReviewDialog from "./EditReviewDialog";
 
 const EDIT_WINDOW_MS = 24 * 60 * 60 * 1000 * 2;
 
 interface ReviewListProps {
-    courseId: string;
-    onReviewDeleted: () => void;
+    course: Course;
+    onReviewChanged: () => void;
 }
 
-function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
+function ReviewList({ course, onReviewChanged } : ReviewListProps) {
     const { user } = useAuth();
     const [reviews, setReviews] = useState<Review[]>([]);
     const [loading, setLoading] = useState(true);
@@ -36,7 +38,8 @@ function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
     const [reviewToDeleteId, setReviewToDeleteId] = useState<string | null>(null);
 
     // State for edit review
-    const [reviewToEdit, setReviewToEdit] = useState<Review | null>(null);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [reviewToEdit, setReviewToEdit] = useState<Review | null>(null); 
 
     const handleSortChange = (value: string) => {
         setSelectedSortOption(value);
@@ -50,21 +53,21 @@ function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
     const handleEditReview = (review: Review) => {
         // Placeholder for now: Set the review to be edited.
         // In the next step, we will open an EditReviewDialog here.
-        setReviewToEdit(review);
-        console.log("Starting edit for review:", review.id);
         // TODO: Open the editing dialog here
+        setReviewToEdit(review);
+        setIsEditDialogOpen(true);
     };
     
     // 2. Function to perform the actual deletion after confirmation
     const confirmDelete = async () => {
         if (!reviewToDeleteId) return;
         console.log(`Deleting review: ${reviewToDeleteId}`);
-        await reviewService.deleteReview(courseId, reviewToDeleteId);
+        await reviewService.deleteReview(course.id, reviewToDeleteId);
         
         // Optimistically update the UI (or refresh data)
         setReviews(reviews.filter(r => r.id !== reviewToDeleteId));
 
-        onReviewDeleted();
+        onReviewChanged();
 
         // Close dialog and reset ID
         setIsDeleteDialogOpen(false);
@@ -75,7 +78,7 @@ function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
         const loadReviews = async () => {
             setLoading(true);
             try {
-                const response = await courseService.getCourseReviews(courseId, selectedSortOption);
+                const response = await reviewService.getReviews(course.id, selectedSortOption);
                 setReviews(response.data);
                 setError(null);
             } catch (err) {
@@ -87,7 +90,7 @@ function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
         };
 
         loadReviews();
-    }, [courseId, selectedSortOption])
+    }, [course, selectedSortOption])
 
     if (loading) {
         return (
@@ -149,15 +152,6 @@ function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
                         const reviewTimestamp = new Date(review.datePosted).getTime();
                         const timeSincePosted = Date.now() - reviewTimestamp;
                         const canEdit = timeSincePosted >= 0 && timeSincePosted < EDIT_WINDOW_MS;
-
-                        // console.log('Review ID:', review.id);
-                        // console.log('Time Since Posted', timeSincePosted)
-                        // console.log('Review timestamp:', reviewTimestamp);
-                        // console.log('Current time:', Date.now());
-                        // console.log('Edit window:', EDIT_WINDOW_MS);
-                        // console.log('Can edit?', canEdit);
-                        // console.log('datePosted string:', review.datePosted);
-
                         return (
                             <Card key={review.id} className="border-gray-200">
                                 <CardHeader>
@@ -223,6 +217,27 @@ function ReviewList({ courseId, onReviewDeleted } : ReviewListProps) {
                         );
                     })}
                 </div>
+            )}
+
+            {reviewToEdit && (
+                <EditReviewDialog
+                    course={course}
+                    initialReviewData={reviewToEdit} // Pass the data to pre-fill the form
+                    open={isEditDialogOpen}
+                    onOpenChange={(open) => { // Controls the dialog's open/close state
+                        setIsEditDialogOpen(open);
+                        if (!open) {
+                            // Clear the review to edit when the dialog closes
+                            setReviewToEdit(null); 
+                        }
+                    }}
+                    onReviewUpdated={() => {
+                        // This function should close the dialog and refresh the list
+                        setIsEditDialogOpen(false);
+                        setReviewToEdit(null);
+                        onReviewChanged();
+                    }}
+                />
             )}
             {/* Confirmation Dialog (Rendered once at the top level) */}
             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

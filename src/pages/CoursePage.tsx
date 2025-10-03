@@ -179,7 +179,7 @@ function CoursePage() {
                 </Card>
                 
                 {/* Reviews Section */}
-                <ReviewList courseId={course.id} key={reviewRefreshKey} onReviewDeleted={handleReviewAction}/>
+                <ReviewList course={course} key={reviewRefreshKey} onReviewChanged={handleReviewAction}/>
             </div>
         </div>
     );

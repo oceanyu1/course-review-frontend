@@ -35,12 +35,6 @@ export const courseService = {
     getCourse: (courseId: string) => {
         return api.get<Course>(`/courses/${courseId}`);
     },
-
-    getCourseReviews: (courseId: string, sortBy: string = 'rating_asc') => {
-        return api.get<Review[]>(`/courses/${courseId}/reviews`, {
-            params: { sortBy }
-        });
-    }
 };
 
 export type { Course, Department };

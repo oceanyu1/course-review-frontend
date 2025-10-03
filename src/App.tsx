@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import { AuthProvider } from './contexts/AuthContext';
+import Profile from './pages/Profile';
 import CoursePage from './pages/CoursePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -24,6 +25,7 @@ function App() {
             <Route path="/course/:courseId" element={<CoursePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </main>

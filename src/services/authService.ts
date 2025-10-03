@@ -16,7 +16,7 @@ export const authService = {
         const response = await api.post<JwtResponse>('/auth/register', credentials);
         if (response.data.token) {
             localStorage.setItem(TOKEN_KEY, response.data.token);
-        }
+        }   
         return response;
     },
 
