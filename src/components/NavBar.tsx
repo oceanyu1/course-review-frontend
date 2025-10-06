@@ -46,7 +46,7 @@ function NavBar() {
             <div className="container mx-auto px-8 h-18 flex items-center justify-between">
                 {/* Logo/Brand */}
                 <Link to="/" className="text-2xl font-bold text-foreground hover:text-primary transition-colors">
-                    RavenRate
+                    RavensRate
                 </Link>
                 
                 {/* Navigation Links */}
