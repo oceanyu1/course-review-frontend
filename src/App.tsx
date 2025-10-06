@@ -32,6 +32,18 @@ function App() {
       </AuthProvider>
       <footer className="py-8 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} Carleton Course Reviews. Built by Students, for Students.
+        <br />
+        <span className="mt-1 inline-block">
+          Created by{' '}
+          <a 
+            href="https://www.linkedin.com/in/oceanyu/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 transition-colors underline"
+          >
+            Ocean Yu
+          </a>
+        </span>
       </footer>
     </div>
   );
