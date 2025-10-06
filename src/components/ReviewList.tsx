@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Trash2, Pencil } from 'lucide-react';
 import type { Course } from '../services/courseService';
-import { courseService } from "../services/courseService";
 import type { Review } from "../types/review";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";

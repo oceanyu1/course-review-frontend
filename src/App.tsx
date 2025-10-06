@@ -20,7 +20,7 @@ function App() {
     <div className="min-h-screen bg-background text-foreground"> 
       <AuthProvider>
         <NavBar />
-        <main className="container mx-auto px-8 pb-4">
+        <main className="pb-4">
           <Routes>
             <Route path="/course/:courseId" element={<CoursePage />} />
             <Route path="/login" element={<Login />} />
@@ -29,7 +29,10 @@ function App() {
             <Route path="/" element={<Home />} />
           </Routes>
         </main>
-      </AuthProvider>    
+      </AuthProvider>
+      <footer className="py-8 text-center text-sm text-muted-foreground">
+        © {new Date().getFullYear()} Carleton Course Reviews. Built by Students, for Students.
+      </footer>
     </div>
   );
 }

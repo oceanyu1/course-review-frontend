@@ -1,6 +1,5 @@
 import api from "./api";
 import type { LoginRequest, RegisterRequest, JwtResponse } from "../types/auth";
-
 const TOKEN_KEY = 'token';
 
 export const authService = {
@@ -30,5 +29,9 @@ export const authService = {
 
     isLoggedIn: (): boolean => {
         return !!localStorage.getItem(TOKEN_KEY);
-    }
+    },
+
+    deleteUser: async () => {
+        await api.delete<void>('/auth/delete')
+    } 
 };

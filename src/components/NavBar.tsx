@@ -42,7 +42,7 @@ function NavBar() {
     };
 
     return (
-        <nav className="border-b bg-background"> {/* Navbar container change border here*/ }
+        <nav className="bg-background"> {/* Navbar container change border here*/ }
             <div className="container mx-auto px-8 h-18 flex items-center justify-between">
                 {/* Logo/Brand */}
                 <Link to="/" className="text-2xl font-bold text-foreground hover:text-primary transition-colors">

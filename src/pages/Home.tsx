@@ -1,8 +1,9 @@
-import React, { useState } from "react"; // Import useState
+import React, { useState, useEffect, useRef } from "react"; // Import useState
 import CourseList from "../components/CourseList";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Banner from "@/components/Banner";
 
 // Define the list of departments you'll display in the dropdown
 // You should replace these with your actual scraped codes (COMP, MATH, etc.)
@@ -124,6 +125,20 @@ function Home() {
     const [selectedDepartmentCode, setSelectedDepartmentCode] = useState("COMP");
     const [selectedSortOption, setSelectedSortOption] = useState("courseNumber_asc");
     const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState("");
+    const courseListRef = useRef<HTMLDivElement>(null);
+
+    const scrollToCourses = () => {
+        courseListRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+        setDebouncedQuery(searchQuery.trim());
+        }, 400); // 400ms delay
+
+        return () => clearTimeout(handler); // Cancel previous timer if user keeps typing
+    }, [searchQuery]);
 
     // Handlers for Select components need to take the raw value string
     const handleDepartmentChange = (value: string) => {
@@ -140,60 +155,90 @@ function Home() {
     }
 
     return (
-        <div className="space-y-6 pt-6">
-            <h1 className="text-3xl font-bold tracking-tight">Browse Courses</h1>
-            
-            {/* Search, Department, and Sort Controls */}
-            <div className="flex flex-col md:flex-row gap-4 items-end">
-                {/* Search Input */}
-                <div className="flex-1 w-full">
-                    <Label htmlFor="search">Search Courses</Label>
-                    <Input
-                        id="search"
-                        type="text"
-                        placeholder="Search by course name or description..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="w-full"
-                    />
+        <div>
+            <Banner onStartBrowsing={scrollToCourses}/>
+            <section className="py-12 bg-muted">
+                <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div>
+                        <h3 className="text-xl font-semibold mb-2">Verified Reviews</h3>
+                        <p className="text-muted-foreground text-sm">Every review is from real Carleton students who took the course.</p>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-semibold mb-2">Smart Filters</h3>
+                        <p className="text-muted-foreground text-sm">Find courses by department, difficulty, or rating instantly.</p>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-semibold mb-2">Data-Driven Insights</h3>
+                        <p className="text-muted-foreground text-sm">See average ratings, comments, and trends over semesters.</p>
+                    </div>
                 </div>
+            </section>
+            <div className="container mx-auto px-8">
+                <div className="space-y-6 pt-6" ref={courseListRef}>
+                    <h1 className="text-4xl font-bold tracking-tight text-center mt-12">Browse Courses</h1>
+                    <p className="text-center max-w-3xl mx-auto text-gray-600 dark:text-gray-300 mb-8">
+                        Search, compare, and explore every course at Carleton. See ratings and feedback from students who've actually taken the class — so you can plan your semester with confidence.
+                    </p>
 
-                {/* Department Dropdown */}
-                <div className="w-full md:w-64">
-                    <Label htmlFor="department">Department</Label>
-                    <Select onValueChange={handleDepartmentChange} value={selectedDepartmentCode}>
-                        <SelectTrigger id="department" className="w-full">
-                            <SelectValue placeholder="Select Department" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[500px] overflow-y-auto">
-                            {DEPARTMENTS.map((dept) => (
-                                <SelectItem key={dept.code} value={dept.code}>
-                                    {dept.name} ({dept.code})
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+                    {/* Search, Department, and Sort Controls */}
+                    <div className="flex flex-col md:flex-row gap-4 items-end">
+                        {/* Search Input */}
+                        <div className="flex-1 w-full">
+                            <div className="mb-0.5 ml-0.5">
+                                <Label htmlFor="search">Search Courses</Label>
+                            </div>
+                            <Input
+                                id="search"
+                                type="text"
+                                placeholder="Search by course name or description..."
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                className="w-full"
+                            />
+                        </div>
 
-                {/* Sorting Dropdown */}
-                <div className="w-full md:w-64">
-                    <Label htmlFor="sort">Sort By</Label>
-                    <Select onValueChange={handleSortChange} value={selectedSortOption}>
-                        <SelectTrigger id="sort" className="w-full">
-                            <SelectValue placeholder="Sort Options" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="courseNumber_asc">Course Number (Asc)</SelectItem>
-                            <SelectItem value="courseNumber_desc">Course Number (Desc)</SelectItem>
-                            <SelectItem value="rating_asc">Average Rating (Asc)</SelectItem>
-                            <SelectItem value="rating_desc">Average Rating (Desc)</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        {/* Department Dropdown */}
+                        <div className="w-full md:w-64">
+                            <div className="mb-0.5 ml-0.5">
+                                <Label htmlFor="department">Department</Label>
+                            </div>
+                            <Select onValueChange={handleDepartmentChange} value={selectedDepartmentCode}>
+                                <SelectTrigger id="department" className="w-full">
+                                    <SelectValue placeholder="Select Department" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[500px] overflow-y-auto">
+                                    {DEPARTMENTS.map((dept) => (
+                                        <SelectItem key={dept.code} value={dept.code}>
+                                            {dept.name} ({dept.code})
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Sorting Dropdown */}
+                        <div className="w-full md:w-64">
+                            <div className="mb-0.5 ml-0.5">
+                                <Label htmlFor="sort">Sort By</Label>
+                            </div>
+                            <Select onValueChange={handleSortChange} value={selectedSortOption}>
+                                <SelectTrigger id="sort" className="w-full">
+                                    <SelectValue placeholder="Sort Options" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="courseNumber_asc">Course Number (Asc)</SelectItem>
+                                    <SelectItem value="courseNumber_desc">Course Number (Desc)</SelectItem>
+                                    <SelectItem value="rating_asc">Average Rating (Asc)</SelectItem>
+                                    <SelectItem value="rating_desc">Average Rating (Desc)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    {/* CourseList Component */}
+                    <CourseList departmentCode={selectedDepartmentCode} sortBy={selectedSortOption} query={debouncedQuery}/>
                 </div>
             </div>
-
-            {/* CourseList Component */}
-            <CourseList departmentCode={selectedDepartmentCode} sortBy={selectedSortOption} query={searchQuery}/>
         </div>
     );
 }

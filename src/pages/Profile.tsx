@@ -3,9 +3,19 @@ import { useAuth } from "../contexts/AuthContext"; // Corrected path from "@/con
 import { reviewService } from "../services/reviewService"; // Corrected path from "@/services/reviewService"
 import type { Review } from "@/types/review";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, FileText } from 'lucide-react';
+import { Star, Trash2 } from 'lucide-react';
 import { formatDate } from "../utils/dateUtils";
-import { Link } from "react-router-dom"; // Assuming you use react-router-dom for navigation
+import { Link, useNavigate } from "react-router-dom"; // Assuming you use react-router-dom for navigation
+import { authService } from "@/services/authService";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 // Component to display an individual review card on the profile page
 const ProfileReviewCard: React.FC<{ review: Review }> = ({ review }) => (
@@ -15,7 +25,7 @@ const ProfileReviewCard: React.FC<{ review: Review }> = ({ review }) => (
                 {/* Link to the course page */}
                 <Link to={`/course/${review.courseId}`} className="hover:text-primary transition-colors">
                     <CardTitle className="text-lg flex items-center">
-                        {review.courseName} {review.courseNumber}
+                        {review.courseTitle}: {review.courseNumber}
                     </CardTitle>
                 </Link>
                 <div className="flex items-center font-semibold text-lg">
@@ -44,10 +54,13 @@ const ProfileReviewCard: React.FC<{ review: Review }> = ({ review }) => (
 
 
 const UserProfile = () => {
-    const { user, isLoading: authLoading } = useAuth();
+    const { user, isLoading: authLoading, logout } = useAuth();
     const [userReviews, setUserReviews] = useState<Review[]>([]);
     const [loadingReviews, setLoadingReviews] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [deleting, setDeleting] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!user) {
@@ -60,6 +73,7 @@ const UserProfile = () => {
             try {
                 // Ensure the service method reviewService.getReviewsByUserId is available
                 const response = await reviewService.getReviewsByUser();
+                console.log("Fetched reviews:", response.data);
                 setUserReviews(response.data);
                 setError(null);
             } catch (err) {
@@ -72,6 +86,25 @@ const UserProfile = () => {
 
         loadUserReviews();
     }, [user]);
+
+    const handleDeleteAccount = () => {
+        setIsDeleteDialogOpen(true);
+    };
+
+    const confirmDeleteAccount = async () => {
+        setDeleting(true);
+        try {
+            await authService.deleteUser();
+            logout();
+            alert("Your account has been deleted.");
+            navigate("/login"); // redirect to login page
+        } catch (err) {
+            console.error("Failed to delete account:", err);
+            alert("Failed to delete your account. Please try again.");
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     if (authLoading) {
         return <div className="text-center py-20">Loading authentication data...</div>;
@@ -88,19 +121,26 @@ const UserProfile = () => {
             <Card className="mb-8">
                 <CardHeader>
                     <CardTitle className="text-3xl font-bold">{user.name}</CardTitle>
-                    <CardDescription>
-                        User ID: <span className="font-mono text-xs bg-gray-100 p-1 rounded">{user.id}</span>
-                    </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-4">
-                    <div>
-                        <p className="font-semibold text-sm text-muted-foreground">Program:</p>
-                        <p className="text-base">{user.program || "N/A"}</p>
+                <CardContent className="flex-col">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <p className="font-semibold text-sm text-muted-foreground">Program:</p>
+                            <p className="text-base">{user.program || "N/A"}</p>
+                        </div>
+                        <div>
+                            <p className="font-semibold text-sm text-muted-foreground">Year:</p>
+                            <p className="text-base">{user.year || "N/A"}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="font-semibold text-sm text-muted-foreground">Year:</p>
-                        <p className="text-base">{user.year || "N/A"}</p>
-                    </div>
+                    <Button
+                        onClick={handleDeleteAccount}
+                        disabled={deleting}
+                        className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-md text-sm transition-colors mt-5"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        {deleting ? "Deleting..." : "Delete Account"}
+                    </Button>
                 </CardContent>
             </Card>
 
@@ -120,6 +160,34 @@ const UserProfile = () => {
                     ))}
                 </div>
             )}
+            {/* Confirmation Dialog (Rendered once at the top level) */}
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DialogContent className="sm:max-w-[425px] p-6">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold flex items-center text-foreground">
+                            <Trash2 className="w-5 h-5 mr-2"/> 
+                            <span>Confirm Deletion</span>
+                        </DialogTitle>
+                        <DialogDescription className="mt-2">
+                            Are you sure you want to delete your account? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="mt-6 flex justify-end gap-2">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setIsDeleteDialogOpen(false)}
+                        >
+                            <span className="text-foreground">Cancel</span>
+                        </Button>
+                        <Button 
+                            variant="destructive" 
+                            onClick={confirmDeleteAccount}
+                        >
+                            Delete Account
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

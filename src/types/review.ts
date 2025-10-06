@@ -17,6 +17,6 @@ export interface Review {
     };
     courseId: string;
     courseNumber: number
-    courseName: string;
+    courseTitle: string;
     anonymous: boolean;
 }
