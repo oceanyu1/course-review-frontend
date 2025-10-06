@@ -21,19 +21,19 @@ import {
 } from "@/components/ui/dialog";
 import type { Review } from '@/types/review';
 
-interface AxiosErrorLike {
-    response?: {
-        data?: {
-            message?: string;
-        } | string; // data might be a JSON object or just a string
-    };
-    message?: string;
-}
+// interface AxiosErrorLike {
+//     response?: {
+//         data?: {
+//             message?: string;
+//         } | string; // data might be a JSON object or just a string
+//     };
+//     message?: string;
+// }
 
-// Type guard function to narrow down the 'unknown' error type
-function isAxiosError(error: any): error is AxiosErrorLike {
-    return error && typeof error === 'object' && 'response' in error;
-}
+// // Type guard function to narrow down the 'unknown' error type
+// function isAxiosError(error: any): error is AxiosErrorLike {
+//     return error && typeof error === 'object' && 'response' in error;
+// }
 
 const reviewFormSchema = z.object({
     content: z.string().min(10, { message: "Review must be at least 10 characters long." }).max(500),

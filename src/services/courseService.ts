@@ -1,5 +1,4 @@
 import api from "./api";
-import type { Review } from "@/types/review";
 
 interface Department {
     id: string;
