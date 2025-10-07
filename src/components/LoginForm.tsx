@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -103,9 +103,9 @@ function LoginForm() {
 
                             <p className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <a href="/register" className="text-primary hover:underline font-medium">
+                                <Link to="/register" className="text-primary hover:underline font-medium">
                                     Sign up
-                                </a>
+                                </Link>
                             </p>
                         </form>
                     </Form>
