@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const MAJORS = [
     "Accounting",
@@ -328,9 +328,9 @@ function RegisterForm() {
 
                             <p className="text-center text-sm text-muted-foreground">
                                 Already have an account?{' '}
-                                <a href="/login" className="text-primary hover:underline font-medium">
+                                <Link to="/login" className="text-primary hover:underline font-medium">
                                     Sign in
-                                </a>
+                                </Link>
                             </p>
                         </form>
                     </Form>
