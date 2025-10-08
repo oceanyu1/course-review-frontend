@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import '@fontsource/inter/400.css'; // Regular weight
 import '@fontsource/inter/700.css'; // Bold weight
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           </a>
         </span>
       </footer>
+      <Analytics />
     </div>
   );
 }
