@@ -10,6 +10,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Link, useNavigate } from "react-router-dom";
+import type { AxiosError } from 'axios';
+
+interface ApiErrorResponse {
+    message?: string;
+    error?: string;
+    // For validation errors
+    violations?: Array<{
+        field: string;
+        message: string;
+    }>;
+}
 
 const MAJORS = [
     "Accounting",
@@ -163,12 +174,6 @@ function RegisterForm() {
             year: 0,
         },
     })
-    
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('');
-    // const [name, setName] = useState('');
-    // const [program, setProgram] = useState('');
-    // const [year, setYear] = useState(1);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -185,7 +190,35 @@ function RegisterForm() {
             navigate('/');
             // Redirect or update UI after successful login
         } catch (err) {
-            setError('Register failed');
+            const axiosError = err as AxiosError<ApiErrorResponse>;
+        
+            if (axiosError.response?.data) {
+                const errorData = axiosError.response.data;
+                
+                // Handle string response (like "Error: Email is already in use!")
+                if (typeof errorData === 'string') {
+                    setError(errorData);
+                }
+                // Handle object response with message
+                else if (errorData.message) {
+                    setError(errorData.message);
+                }
+                // Handle validation errors array
+                else if (errorData.violations && errorData.violations.length > 0) {
+                    const errorMessages = errorData.violations.map(v => v.message).join(', ');
+                    setError(errorMessages);
+                }
+                // Handle generic error object
+                else if (errorData.error) {
+                    setError(errorData.error);
+                }
+                else {
+                    setError('Registration failed. Please try again.');
+                }
+            } else {
+                setError('Network error. Please check your connection.');
+            }
+
             console.error('Register failed:', err);
         } finally {
             setLoading(false);
@@ -233,7 +266,7 @@ function RegisterForm() {
                                         </div>
                                         <FormControl>
                                             <Input 
-                                                placeholder="you@example.com" 
+                                                placeholder="you@cmail.carleton.ca" 
                                                 type="email"
                                                 {...field} 
                                             />

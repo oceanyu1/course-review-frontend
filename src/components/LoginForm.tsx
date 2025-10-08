@@ -8,8 +8,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import type { AxiosError } from 'axios';
 
 import { Link, useNavigate } from "react-router-dom";
+
+interface ApiErrorResponse {
+    message?: string;
+    error?: string;
+    violations?: Array<{
+        field: string;
+        message: string;
+    }>;
+}
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -40,7 +50,35 @@ function LoginForm() {
             console.log('Logged in');
             navigate('/');
         } catch (err) {
-            setError('Login failed');
+            const axiosError = err as AxiosError<ApiErrorResponse>;
+            
+            if (axiosError.response?.data) {
+                const errorData = axiosError.response.data;
+                
+                // Handle string response
+                if (typeof errorData === 'string') {
+                    setError(errorData);
+                }
+                // Handle object response with message
+                else if (errorData.message) {
+                    setError(errorData.message);
+                }
+                // Handle validation errors array
+                else if (errorData.violations && errorData.violations.length > 0) {
+                    const errorMessages = errorData.violations.map(v => v.message).join(', ');
+                    setError(errorMessages);
+                }
+                // Handle generic error object
+                else if (errorData.error) {
+                    setError(errorData.error);
+                }
+                else {
+                    setError('Login failed. Please try again.');
+                }
+            } else {
+                setError('Network error. Please check your connection.');
+            }
+            
             console.error('Login failed:', err);
         } finally {
             setLoading(false);
