@@ -3,7 +3,7 @@ function Banner({ onStartBrowsing }: { onStartBrowsing: () => void }) {
         <div className="relative w-full py-20 text-center">
             <h1 className="px-8 max-w-4xl mx-auto text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-accent-foreground">
                 Find the Best Courses at Carleton with {" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-400">
                     Real Student Reviews
                 </span>
             </h1>
