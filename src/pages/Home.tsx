@@ -122,7 +122,7 @@ const DEPARTMENTS = [
 ];
 
 function Home() {
-    const [selectedDepartmentCode, setSelectedDepartmentCode] = useState("COMP");
+    const [selectedDepartmentCode, setSelectedDepartmentCode] = useState("empty");
     const [selectedSortOption, setSelectedSortOption] = useState("courseNumber_asc");
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -207,6 +207,7 @@ function Home() {
                                     <SelectValue placeholder="Select Department" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[500px] overflow-y-auto">
+                                    <SelectItem value="empty">All Departments</SelectItem>
                                     {DEPARTMENTS.map((dept) => (
                                         <SelectItem key={dept.code} value={dept.code}>
                                             {dept.name} ({dept.code})
