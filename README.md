@@ -6,10 +6,9 @@
   <h3 align="center">RavensRate</h3>
 
   <p align="center">
-    RavensRate is a course review platform where Carleton University students can browse, review, and rate courses. This repo includes only the backend, you can access the backend <a href="https://github.com/oceanyu1/course-review-backend">here</a>. It provides secure authentication, RESTful endpoints, and PostgreSQL integration to support the full review lifecycle from browsing courses to submitting feedback.
+    RavensRate is a course review platform where Carleton University students can browse, review, and rate courses. This repo includes only the backend, you can access the backend <a href="https://github.com/oceanyu1/course-review-backend">here</a>. It provides secure authentication, RESTful endpoints, and PostgreSQL integration to support the full review lifecycle from browsing courses to submitting feedback. View the live site <a href="https://ravensrate.ca"><strong>here.</strong></a>
     <br />
     <a href="https://github.com/oceanyu1/course-review-frontend"><strong>Explore the project »</strong></a>
-    <a href="https://ravensrate.ca"><strong>View Live Site »</strong></a>
   </p>
 </div>
 
