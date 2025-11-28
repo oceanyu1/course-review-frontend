@@ -30,7 +30,7 @@ interface Course {
 export const courseService = {
     // Search courses with query, optional sorting, and department filter
     searchCourses: (query: string | undefined, 
-                    sortBy: string = 'averageRating_desc', 
+                    sortBy: string = 'rating_desc', 
                     departmentCode: string | undefined,
                     page: number = 0,
                     size: number = 60) => {

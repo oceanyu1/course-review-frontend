@@ -123,7 +123,7 @@ const DEPARTMENTS = [
 
 function Home() {
     const [selectedDepartmentCode, setSelectedDepartmentCode] = useState("empty");
-    const [selectedSortOption, setSelectedSortOption] = useState("averageRating_desc");
+    const [selectedSortOption, setSelectedSortOption] = useState("rating_desc");
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedQuery, setDebouncedQuery] = useState("");
     const courseListRef = useRef<HTMLDivElement>(null);
@@ -229,8 +229,8 @@ function Home() {
                                 <SelectContent>
                                     <SelectItem value="courseNumber_asc">Course Number (Asc)</SelectItem>
                                     <SelectItem value="courseNumber_desc">Course Number (Desc)</SelectItem>
-                                    <SelectItem value="averageRating_asc">Average Rating (Asc)</SelectItem>
-                                    <SelectItem value="averageRating_desc">Average Rating (Desc)</SelectItem>
+                                    <SelectItem value="rating_asc">Average Rating (Asc)</SelectItem>
+                                    <SelectItem value="rating_desc">Average Rating (Desc)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
